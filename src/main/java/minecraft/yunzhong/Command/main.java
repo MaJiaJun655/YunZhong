@@ -55,10 +55,14 @@ public class main extends JavaPlugin implements Listener {
                 if(args.length!=0) {
                     switch(args[0]) {
                         case "reload":
-                            CommandApi.reload(sender, this);
+                            if(sender.hasPermission("yzzm.admin")||sender.getName().equals(this.getConfig().getString("bossName"))) {
+                                CommandApi.reload(sender, this);
+                            }
                             break;
                         case "adminsay":
-                            CommandApi.adminsay(sender, args);
+                            if(sender.hasPermission("yzzm.admin")||sender.getName().equals(this.getConfig().getString("bossName"))) {
+                                CommandApi.adminsay(sender, args);
+                            }
                             break;
                         case "admin":
                             admin(sender);
