@@ -5,3 +5,4 @@ bossName: Jetren
 publicOffFly: true
 noflyWorld:
   - EMworld
+  - boss

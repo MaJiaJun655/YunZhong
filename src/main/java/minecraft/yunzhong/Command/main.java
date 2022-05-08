@@ -166,19 +166,25 @@ public class main extends JavaPlugin implements Listener {
         }
     }
 
-
+    @EventHandler
     public void offFlyByWorld(PlayerToggleFlightEvent ToggleFlightEvent) {	//当玩家切换飞行状态
-        if (this.getConfig().getStringList("noflyWorld").contains(ToggleFlightEvent.getPlayer().getWorld().getName())) {
-            ToggleFlightEvent.getPlayer().setFlying(false);
-            ToggleFlightEvent.getPlayer().setAllowFlight(false);
-        }
-        if(this.getConfig().getString("publicOffFly").equals("true")) {
-            if(!ToggleFlightEvent.getPlayer().hasPermission("yzzm.fly")) {
-                ToggleFlightEvent.getPlayer().setFlying(false);
-                ToggleFlightEvent.getPlayer().setAllowFlight(false);
-                ToggleFlightEvent.getPlayer().sendMessage(ChatColor.RED + "对不起，你未拥有飞行的权限");
+        if(!ToggleFlightEvent.getPlayer().hasPermission("yzzm.admin")&&!ToggleFlightEvent.getPlayer().getName().equals(this.getConfig().getString("bossName"))) {
+            if (this.getConfig().getStringList("noflyWorld").contains(ToggleFlightEvent.getPlayer().getWorld().getName())) {
+                if (ToggleFlightEvent.isFlying()) {
+                    ToggleFlightEvent.getPlayer().setFlying(false);
+                    ToggleFlightEvent.getPlayer().setAllowFlight(false);
+                }
+                ToggleFlightEvent.setCancelled(true);
+                return;
+            }
+            if (this.getConfig().getString("publicOffFly").equals("true")) {
+                if (!ToggleFlightEvent.getPlayer().hasPermission("yzzm.fly")) {
+                    ToggleFlightEvent.setCancelled(true);
+                    ToggleFlightEvent.getPlayer().sendMessage(ChatColor.RED + "对不起，你未拥有飞行的权限");
+                }
             }
         }
+
     }
 
 
