@@ -18,10 +18,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.PlayerChangedWorldEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerSwapHandItemsEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.IOException;
@@ -130,10 +127,9 @@ public class main extends JavaPlugin implements Listener {
     @EventHandler
     public void ClickF(PlayerSwapHandItemsEvent PSHIE) {	//当玩家按下F键可执行一段命令
         if(this.getConfig().getBoolean("f_state")){
-            if(PSHIE.getPlayer().hasPermission("yzzm.f")) {
+            if(PSHIE.getPlayer().hasPermission("yzzm.f")&&PSHIE.getPlayer().isSneaking()) {
                 PSHIE.setCancelled(true);
                 PSHIE.getPlayer().chat(this.getConfig().getString("f_command"));
-            }else {
             }
         }
     }
@@ -163,6 +159,21 @@ public class main extends JavaPlugin implements Listener {
         if (this.getConfig().getStringList("noflyWorld").contains(pcwe.getPlayer().getWorld().getName())) {
             pcwe.getPlayer().setFlying(false);
             pcwe.getPlayer().setAllowFlight(false);
+        }
+    }
+
+
+    public void offFlyByWorld(PlayerToggleFlightEvent ToggleFlightEvent) {	//当玩家切换飞行状态
+        if (this.getConfig().getStringList("noflyWorld").contains(ToggleFlightEvent.getPlayer().getWorld().getName())) {
+            ToggleFlightEvent.getPlayer().setFlying(false);
+            ToggleFlightEvent.getPlayer().setAllowFlight(false);
+        }
+        if(this.getConfig().getString("publicOffFly").equals("true")) {
+            if(!ToggleFlightEvent.getPlayer().hasPermission("yzzm.fly")) {
+                ToggleFlightEvent.getPlayer().setFlying(false);
+                ToggleFlightEvent.getPlayer().setAllowFlight(false);
+                ToggleFlightEvent.getPlayer().sendMessage(ChatColor.RED + "对不起，你未拥有飞行的权限");
+            }
         }
     }
 
