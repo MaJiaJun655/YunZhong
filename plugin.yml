@@ -1,0 +1,8 @@
+name: YunZhong
+main: minecraft.yunzhong.Command.main
+version: 0.0.1-SNAPSHOT
+
+commands:
+  mcyz:
+    description: mcyz
+    usage: /<command>

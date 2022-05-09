@@ -3,10 +3,7 @@ package minecraft.yunzhong.Command;
 import minecraft.yunzhong.api.CommandApi;
 import minecraft.yunzhong.api.McLogger;
 import minecraft.yunzhong.api.Profile;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
@@ -21,10 +18,10 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.Properties;
+import java.util.List;
 
 public class main extends JavaPlugin implements Listener {
     @Override
@@ -204,22 +201,78 @@ public class main extends JavaPlugin implements Listener {
 
     @EventHandler
     public void monsterChance(CreatureSpawnEvent spawnEvent) {	//当生物生成时
-        int count = 0;
+        int mcount = 0;
+        int scount = 0;
         if(spawnEvent.getSpawnReason() == CreatureSpawnEvent.SpawnReason.NATURAL) {
             if (spawnEvent.getEntityType() == EntityType.ENDERMAN) {        //如果生物是末影人
                 Entity[] entityList = spawnEvent.getLocation().getChunk().getEntities(); //获得当前区块的所有生物
                 for (Entity entity : entityList) {
                     if (entity.getType() == EntityType.ENDERMAN) {
-                        count++;
+                        mcount++;
                     }
-                    if (count == 1) {
+                    if (mcount == 1) {
                         spawnEvent.setCancelled(true);        //如果末影人数量大于1则停止生成
                         break;
                     }
                 }
+            }else if (spawnEvent.getEntityType() == EntityType.GUARDIAN) {        //如果守卫者
+                Entity[] entityList = spawnEvent.getLocation().getChunk().getEntities(); //获得当前区块的所有生物
+                for (Entity entity : entityList) {
+                    if (entity.getType() == EntityType.GUARDIAN) {
+                        scount++;
+                    }
+                    if (scount == 1) {
+                        spawnEvent.setCancelled(true);        //如果末影人数量大于1则停止生成
+                        break;
+                    }
+                }
+//                Chunk thisChunk = spawnEvent.getLocation().getChunk();
+//                Location l = spawnEvent.getLocation();
+//                Entity[] entityList = spawnEvent.getLocation().getChunk().getEntities(); //获得当前区块的所有生物
+//                List<Entity[]> entityArray = new ArrayList<>();
+//                l.setX(thisChunk.getX()-1);
+//                thisChunk = l.getChunk();
+//                entityArray.add(thisChunk.getEntities());
+//                l.setY(thisChunk.getZ()-1);
+//                thisChunk = l.getChunk();
+//                entityArray.add(thisChunk.getEntities());
+//                l.setY(thisChunk.getX()+1);
+//                thisChunk = l.getChunk();
+//                entityArray.add(thisChunk.getEntities());
+//                l.setY(thisChunk.getX()+1);
+//                thisChunk = l.getChunk();
+//                entityArray.add(thisChunk.getEntities());
+//                l.setY(thisChunk.getZ()+1);
+//                thisChunk = l.getChunk();
+//                entityArray.add(thisChunk.getEntities());
+//                l.setY(thisChunk.getZ()+1);
+//                thisChunk = l.getChunk();
+//                entityArray.add(thisChunk.getEntities());
+//                l.setY(thisChunk.getX()-1);
+//                thisChunk = l.getChunk();
+//                entityArray.add(thisChunk.getEntities());
+//                l.setY(thisChunk.getX()-1);
+//                thisChunk = l.getChunk();
+//                entityArray.add(thisChunk.getEntities());
+//
+//                for (Entity[] entity : entityArray) {
+//                    for (Entity entityinfo : entity){
+//                        if (entityinfo.getType() == EntityType.GUARDIAN) {
+//                            scount++;
+//                        }
+//                        if (scount == 20) {
+//                            break;
+//                        }
+//                    }
+//                    if (scount == 20) {
+//                        spawnEvent.setCancelled(true);
+//                        break;
+//                    }
+//                }
             }
         }
     }
+
 
     @EventHandler
     public void playerSay(AsyncPlayerChatEvent playerChatEvent) {
