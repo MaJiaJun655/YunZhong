@@ -187,14 +187,30 @@ public class main extends JavaPlugin implements Listener {
 
     @EventHandler
     public void AntiMonster(EntityDeathEvent entity_death) {	//当生物死亡时
-        if(
-                this.getConfig().getBoolean("antiMonster")		//如果使用该功能
-                        &&entity_death.getEntity().getType()!= EntityType.PLAYER		//如果改生物不是玩家
-                        &&entity_death.getEntity().getKiller()==null	//如果这个生物的死亡与任何玩家无关
-        )
-        {
-            entity_death.setDroppedExp(0);		//不掉落经验
-            entity_death.getDrops().clear();	//不掉落物品
+        if(this.getConfig().getBoolean("antiMonster")) {
+            if (
+                    entity_death.getEntity().getType() == EntityType.PIG
+                            ||entity_death.getEntity().getType() == EntityType.MUSHROOM_COW
+                            ||entity_death.getEntity().getType() == EntityType.COW
+                            ||entity_death.getEntity().getType() == EntityType.SHEEP
+                            ||entity_death.getEntity().getType() == EntityType.CHICKEN
+                            ||entity_death.getEntity().getType() == EntityType.PIG
+            ){
+                if (
+                        entity_death.getEntity().getType() != EntityType.PLAYER        //如果改生物不是玩家
+                                && entity_death.getEntity().getKiller() == null    //如果这个生物的死亡与任何玩家无关
+                ) {
+                    entity_death.setDroppedExp(0);        //不掉落经验
+                }
+            }else{
+                if (
+                        entity_death.getEntity().getType() != EntityType.PLAYER        //如果改生物不是玩家
+                                && entity_death.getEntity().getKiller() == null    //如果这个生物的死亡与任何玩家无关
+                ) {
+                    entity_death.setDroppedExp(0);        //不掉落经验
+                    entity_death.getDrops().clear();    //不掉落物品
+                }
+            }
         }
     }
 
@@ -221,7 +237,7 @@ public class main extends JavaPlugin implements Listener {
                     if (entity.getType() == EntityType.GUARDIAN) {
                         scount++;
                     }
-                    if (scount == 1) {
+                    if (scount == 2) {
                         spawnEvent.setCancelled(true);        //如果末影人数量大于1则停止生成
                         break;
                     }
