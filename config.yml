@@ -1,8 +1,10 @@
 f_state: true
 f_command: /clock open 0
-antiMonster: true
+antiMonster: false
 bossName: Jetren
 publicOffFly: true
 noflyWorld:
-  - EMworld
   - boss
+noBlastWorld:
+  - EMworld
+  - world
