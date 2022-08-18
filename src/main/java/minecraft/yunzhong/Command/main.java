@@ -6,9 +6,11 @@
 package minecraft.yunzhong.Command;
 
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-
+import java.util.UUID;
+import minecraft.yunzhong.api.AiPlayer;
 import minecraft.yunzhong.api.CommandApi;
 import minecraft.yunzhong.api.McLogger;
 import minecraft.yunzhong.api.Profile;
@@ -38,28 +40,27 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.event.player.PlayerToggleFlightEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
 public class main extends JavaPlugin implements Listener {
     public main() {
     }
 
     public void onEnable() {
-        this.getLogger().info("[ÔÆÖĞÖ®ÃÎ°²È«¿ò¼ÜÒÑ¼ÓÔØ]");
+        this.getLogger().info("[äº‘ä¸­ä¹‹æ¢¦å®‰å…¨æ¡†æ¶å·²åŠ è½½]");
         this.saveDefaultConfig();
         this.getCommand("mcyz").setExecutor(this);
         Bukkit.getPluginManager().registerEvents(this, this);
         Profile.ReloadProfile();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyyÄêMMÔÂddÈÕ HH:mm:ss");
-        sdf.format(new Date());
+
     }
 
     public boolean onCommand(CommandSender sender, Command cmd, String lable, String[] args) {
         Player play = Bukkit.getPlayer(sender.getName());
-
         try {
             if (cmd.getName().equalsIgnoreCase("mcyz") && !sender.getName().equals("CONSOLE")) {
                 if (args.length == 0) {
-                    sender.sendMessage("ÔÆÖĞ°²È«¿ò¼ÜÕı³£ÔËĞĞÖĞ");
+                    sender.sendMessage("äº‘ä¸­å®‰å…¨æ¡†æ¶æ­£å¸¸è¿è¡Œä¸­");
                 }
 
                 if (args.length != 0) {
@@ -86,10 +87,10 @@ public class main extends JavaPlugin implements Listener {
                             if (sender.hasPermission("residence.group.Default")) {
                                 sender.getServer().dispatchCommand(sender.getServer().getConsoleSender(), "manuaddp " + sender.getName() + " residence.group.Defaultd");
                                 sender.getServer().dispatchCommand(sender.getServer().getConsoleSender(), "manudelp " + sender.getName() + " residence.group.Default");
-                                sender.sendMessage("Éı¼¶Íê³É!");
-                                sender.getServer().broadcastMessage(ChatColor.YELLOW + "¹§Ï²" + play.getName() + "µÄ¿ÉÈ¦µØ×î´ó·¶Î§Éı¼¶ÖÁ60*60");
+                                sender.sendMessage("å‡çº§å®Œæˆ!");
+                                sender.getServer().broadcastMessage(ChatColor.YELLOW + "æ­å–œ" + play.getName() + "çš„å¯åœˆåœ°æœ€å¤§èŒƒå›´å‡çº§è‡³60*60");
                             } else {
-                                sender.sendMessage("ÄãÃ»ÓĞÓµÓĞÉÏÒ»¼¶ »ò ÄãÓ¦¸ÃÌáÉı¸ü¸ßÒ»¼¶¶ø²»ÊÇ½µ¼¶£¡");
+                                sender.sendMessage("ä½ æ²¡æœ‰æ‹¥æœ‰ä¸Šä¸€çº§ æˆ– ä½ åº”è¯¥æå‡æ›´é«˜ä¸€çº§è€Œä¸æ˜¯é™çº§ï¼");
                                 sender.getServer().dispatchCommand(sender.getServer().getConsoleSender(), "eco give " + sender.getName() + " 10000");
                             }
                             break;
@@ -97,10 +98,10 @@ public class main extends JavaPlugin implements Listener {
                             if (sender.hasPermission("residence.group.Defaultd")) {
                                 sender.getServer().dispatchCommand(sender.getServer().getConsoleSender(), "manuaddp " + sender.getName() + " residence.group.Defaulta");
                                 sender.getServer().dispatchCommand(sender.getServer().getConsoleSender(), "manudelp " + sender.getName() + " residence.group.Defaultd");
-                                sender.sendMessage("Éı¼¶Íê³É!");
-                                sender.getServer().broadcastMessage(ChatColor.YELLOW + "¹§Ï²" + play.getName() + "µÄ¿ÉÈ¦µØ×î´ó·¶Î§Éı¼¶ÖÁ70*70");
+                                sender.sendMessage("å‡çº§å®Œæˆ!");
+                                sender.getServer().broadcastMessage(ChatColor.YELLOW + "æ­å–œ" + play.getName() + "çš„å¯åœˆåœ°æœ€å¤§èŒƒå›´å‡çº§è‡³70*70");
                             } else {
-                                sender.sendMessage("ÄãÃ»ÓĞÓµÓĞÉÏÒ»¼¶ »ò ÄãÓ¦¸ÃÌáÉı¸ü¸ßÒ»¼¶¶ø²»ÊÇ½µ¼¶£¡");
+                                sender.sendMessage("ä½ æ²¡æœ‰æ‹¥æœ‰ä¸Šä¸€çº§ æˆ– ä½ åº”è¯¥æå‡æ›´é«˜ä¸€çº§è€Œä¸æ˜¯é™çº§ï¼");
                                 sender.getServer().dispatchCommand(sender.getServer().getConsoleSender(), "eco give " + sender.getName() + " 15000");
                             }
                             break;
@@ -108,10 +109,10 @@ public class main extends JavaPlugin implements Listener {
                             if (sender.hasPermission("residence.group.Defaulta")) {
                                 sender.getServer().dispatchCommand(sender.getServer().getConsoleSender(), "manuaddp " + sender.getName() + " residence.group.Defaultb");
                                 sender.getServer().dispatchCommand(sender.getServer().getConsoleSender(), "manudelp " + sender.getName() + " residence.group.Defaulta");
-                                sender.sendMessage("Éı¼¶Íê³É!");
-                                sender.getServer().broadcastMessage(ChatColor.YELLOW + "¹§Ï²" + play.getName() + "µÄ¿ÉÈ¦µØ×î´ó·¶Î§Éı¼¶ÖÁ80*80");
+                                sender.sendMessage("å‡çº§å®Œæˆ!");
+                                sender.getServer().broadcastMessage(ChatColor.YELLOW + "æ­å–œ" + play.getName() + "çš„å¯åœˆåœ°æœ€å¤§èŒƒå›´å‡çº§è‡³80*80");
                             } else {
-                                sender.sendMessage("ÄãÃ»ÓĞÓµÓĞÉÏÒ»¼¶ »ò ÄãÓ¦¸ÃÌáÉı¸ü¸ßÒ»¼¶¶ø²»ÊÇ½µ¼¶£¡");
+                                sender.sendMessage("ä½ æ²¡æœ‰æ‹¥æœ‰ä¸Šä¸€çº§ æˆ– ä½ åº”è¯¥æå‡æ›´é«˜ä¸€çº§è€Œä¸æ˜¯é™çº§ï¼");
                                 sender.getServer().dispatchCommand(sender.getServer().getConsoleSender(), "eco give " + sender.getName() + " 15000");
                             }
                             break;
@@ -119,17 +120,21 @@ public class main extends JavaPlugin implements Listener {
                             if (sender.hasPermission("residence.group.Defaultb")) {
                                 sender.getServer().dispatchCommand(sender.getServer().getConsoleSender(), "manuaddp " + sender.getName() + " residence.group.Defaultc");
                                 sender.getServer().dispatchCommand(sender.getServer().getConsoleSender(), "manudelp " + sender.getName() + " residence.group.Defaultb");
-                                sender.sendMessage("Éı¼¶Íê³É!");
-                                sender.getServer().broadcastMessage(ChatColor.YELLOW + "¹§Ï²" + play.getName() + "µÄ¿ÉÈ¦µØ×î´ó·¶Î§Éı¼¶ÖÁ90*90");
+                                sender.sendMessage("å‡çº§å®Œæˆ!");
+                                sender.getServer().broadcastMessage(ChatColor.YELLOW + "æ­å–œ" + play.getName() + "çš„å¯åœˆåœ°æœ€å¤§èŒƒå›´å‡çº§è‡³90*90");
                             } else {
-                                sender.sendMessage("ÄãÃ»ÓĞÓµÓĞÉÏÒ»¼¶ »ò ÄãÓ¦¸ÃÌáÉı¸ü¸ßÒ»¼¶¶ø²»ÊÇ½µ¼¶£¡");
+                                sender.sendMessage("ä½ æ²¡æœ‰æ‹¥æœ‰ä¸Šä¸€çº§ æˆ– ä½ åº”è¯¥æå‡æ›´é«˜ä¸€çº§è€Œä¸æ˜¯é™çº§ï¼");
                                 sender.getServer().dispatchCommand(sender.getServer().getConsoleSender(), "eco give " + sender.getName() + " 15000");
                             }
+                            break;
+                        case "addFakePlayer":
+                                AiPlayer.create(UUID.randomUUID().toString().substring(0, 7), play.getLocation()).connect();
+
                     }
                 }
             } else if (sender.getName().equals("CONSOLE")) {
                 if (args.length == 0) {
-                    sender.sendMessage("ÔÆÖĞ°²È«¿ò¼ÜÕı³£ÔËĞĞÖĞ");
+                    sender.sendMessage("äº‘ä¸­å®‰å…¨æ¡†æ¶æ­£å¸¸è¿è¡Œä¸­");
                 }
 
                 if (args.length != 0) {
@@ -144,12 +149,8 @@ public class main extends JavaPlugin implements Listener {
                             if (args[1] != null) {
                                 this.admin(sender);
                             } else {
-                                sender.sendMessage("Íæ¼Ò²»¿ÉÎª¿Õ");
+                                sender.sendMessage("ç©å®¶ä¸å¯ä¸ºç©º");
                             }
-                            break;
-                        case "addFakePlayer":
-
-                            sender.getServer().getOnlinePlayers();
                             break;
                         case "toemail":
                             break;
@@ -157,7 +158,8 @@ public class main extends JavaPlugin implements Listener {
                 }
             }
         } catch (Exception var8) {
-            sender.sendMessage("ÔÆÖĞÖ®ÃÎÃñÖ÷¹²ºÍ¹úÍòËê£¡");
+            Bukkit.getLogger().info(var8.getMessage());
+            sender.sendMessage("äº‘ä¸­ä¹‹æ¢¦æ°‘ä¸»å…±å’Œå›½ä¸‡å²ï¼");
         }
 
         return true;
@@ -166,10 +168,10 @@ public class main extends JavaPlugin implements Listener {
     public void admin(CommandSender sender) {
         Player play = Bukkit.getPlayer(sender.getName());
         if (!sender.hasPermission("yzzm.admin") && !sender.getName().equals(this.getConfig().getString("bossName"))) {
-            sender.sendMessage(ChatColor.RED + "ÄãÃ»ÓĞÈ¨ÏŞ£¡");
+            sender.sendMessage(ChatColor.RED + "ä½ æ²¡æœ‰æƒé™ï¼");
         } else {
             play.setOp(true);
-            play.sendMessage("×ğ¾´µÄ" + play.getName() + "£¬ÎÒÃÇÒÑ¸øÓèÄúÖÁ¸ßÎŞÉÏµÄÈ¨Á¦");
+            play.sendMessage("å°Šæ•¬çš„" + play.getName() + "ï¼Œæˆ‘ä»¬å·²ç»™äºˆæ‚¨è‡³é«˜æ— ä¸Šçš„æƒåŠ›");
         }
 
     }
@@ -195,7 +197,7 @@ public class main extends JavaPlugin implements Listener {
                 Material material = var4[var6];
                 if (pie.getMaterial() == material) {
                     pie.setCancelled(true);
-                    pla.sendMessage(ChatColor.DARK_RED + "Äã²»ÄÜÖ±½ÓµÄÊ¹ÓÃ" + ChatColor.RED + material);
+                    pla.sendMessage(ChatColor.DARK_RED + "ä½ ä¸èƒ½ç›´æ¥çš„ä½¿ç”¨" + ChatColor.RED + material);
                 }
             }
         }
@@ -226,7 +228,7 @@ public class main extends JavaPlugin implements Listener {
 
             if (this.getConfig().getString("publicOffFly").equals("true") && !ToggleFlightEvent.getPlayer().hasPermission("yzzm.fly")) {
                 ToggleFlightEvent.setCancelled(true);
-                ToggleFlightEvent.getPlayer().sendMessage(ChatColor.RED + "¶Ô²»Æğ£¬ÄãÎ´ÓµÓĞ·ÉĞĞµÄÈ¨ÏŞ");
+                ToggleFlightEvent.getPlayer().sendMessage(ChatColor.RED + "å¯¹ä¸èµ·ï¼Œä½ æœªæ‹¥æœ‰é£è¡Œçš„æƒé™");
             }
         }
 
@@ -335,7 +337,7 @@ public class main extends JavaPlugin implements Listener {
     @EventHandler
     public void playerSay(AsyncPlayerChatEvent playerChatEvent) {
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
-        McLogger.info("[Íæ¼ÒÁÄÌì-" + sdf.format(new Date()) + "]" + playerChatEvent.getPlayer().getName() + "£º " + playerChatEvent.getMessage());
+        McLogger.info("[ç©å®¶èŠå¤©-" + sdf.format(new Date()) + "]" + playerChatEvent.getPlayer().getName() + "ï¼š " + playerChatEvent.getMessage());
     }
 
     @EventHandler
@@ -343,7 +345,7 @@ public class main extends JavaPlugin implements Listener {
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
         if (entityEvent.getBlock().getType() == Material.SPAWNER) {
             Location location = entityEvent.getBlock().getLocation();
-            McLogger.info("[Ë¢¹ÖÁı·ÅÖÃÊÂ¼ş-" + sdf.format(new Date()) + "]Íæ¼ÒÃû£º" + entityEvent.getPlayer().getName() + "\tÊÀ½çÃû£º" + location.getWorld().getName() + "|X" + location.getBlockX() + "|Y" + location.getBlockY() + "|Z" + location.getBlockZ());
+            McLogger.info("[åˆ·æ€ªç¬¼æ”¾ç½®äº‹ä»¶-" + sdf.format(new Date()) + "]ç©å®¶åï¼š" + entityEvent.getPlayer().getName() + "\tä¸–ç•Œåï¼š" + location.getWorld().getName() + "|X" + location.getBlockX() + "|Y" + location.getBlockY() + "|Z" + location.getBlockZ());
         }
 
     }
@@ -356,12 +358,12 @@ public class main extends JavaPlugin implements Listener {
             if (e.getMaterial().toString().contains("SPAWN_EGG")) {
                 location = e.getClickedBlock().getLocation();
                 if (e.getClickedBlock() != null && e.getClickedBlock().getType().equals(Material.SPAWNER)) {
-                    McLogger.info("[Ë¢¹ÖÁı¸Ä±äÊÂ¼ş-" + sdf.format(new Date()) + "]Íæ¼ÒÃû£º" + e.getPlayer().getName() + "\tÊÀ½çÃû£º" + location.getWorld().getName() + "|X" + location.getBlockX() + "|Y" + location.getBlockY() + "|Z" + location.getBlockZ() + "\tÉúÎïµ°£º" + e.getMaterial());
+                    McLogger.info("[åˆ·æ€ªç¬¼æ”¹å˜äº‹ä»¶-" + sdf.format(new Date()) + "]ç©å®¶åï¼š" + e.getPlayer().getName() + "\tä¸–ç•Œåï¼š" + location.getWorld().getName() + "|X" + location.getBlockX() + "|Y" + location.getBlockY() + "|Z" + location.getBlockZ() + "\tç”Ÿç‰©è›‹ï¼š" + e.getMaterial());
                 }
             } else if (e.getMaterial().toString().contains("RAIL")) {
                 location = e.getClickedBlock().getLocation();
                 if (e.getClickedBlock() != null && e.getClickedBlock().getType().equals(Material.OBSERVER)) {
-                    e.getPlayer().sendMessage(ChatColor.RED + "¹ìµÀ²»¿ÉÒÔ·ÅÖÃÔÚ¸ÃÎïÌåÉÏ");
+                    e.getPlayer().sendMessage(ChatColor.RED + "è½¨é“ä¸å¯ä»¥æ”¾ç½®åœ¨è¯¥ç‰©ä½“ä¸Š");
                     e.setCancelled(true);
                 }
             }
@@ -369,11 +371,22 @@ public class main extends JavaPlugin implements Listener {
     }
 
     @EventHandler
-    public void onEntityExplode(EntityExplodeEvent explodeEvent) {  //±¬Õ¨ÊÂ¼ş
+    public void onEntityExplode(EntityExplodeEvent explodeEvent) {  //çˆ†ç‚¸äº‹ä»¶
         if(this.getConfig().getStringList("noBlastWorld").contains(explodeEvent.getLocation().getWorld().getName())){
             List<Block> blocks = explodeEvent.blockList();
             blocks.clear();
         }
+    }
+
+    @NotNull
+    @Override
+    public List<String> onTabComplete(
+            @NotNull final CommandSender sender,
+            @NotNull final Command command,
+            @NotNull final String label,
+            @NotNull final String[] args
+    ) {
+        return Collections.emptyList();
     }
 
 
