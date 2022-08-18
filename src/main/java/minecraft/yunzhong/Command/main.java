@@ -10,7 +10,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
-import minecraft.yunzhong.api.AiPlayer;
+
 import minecraft.yunzhong.api.CommandApi;
 import minecraft.yunzhong.api.McLogger;
 import minecraft.yunzhong.api.Profile;
@@ -126,10 +126,6 @@ public class main extends JavaPlugin implements Listener {
                                 sender.sendMessage("你没有拥有上一级 或 你应该提升更高一级而不是降级！");
                                 sender.getServer().dispatchCommand(sender.getServer().getConsoleSender(), "eco give " + sender.getName() + " 15000");
                             }
-                            break;
-                        case "addFakePlayer":
-                                AiPlayer.create(UUID.randomUUID().toString().substring(0, 7), play.getLocation()).connect();
-
                     }
                 }
             } else if (sender.getName().equals("CONSOLE")) {
