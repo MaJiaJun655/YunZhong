@@ -15,7 +15,13 @@
             <name>Sponge Maven Repository</name>
             <url>https://repo.spongepowered.org/maven</url>
         </repository>
+
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
     </repositories>
+
 
     <groupId>org.example</groupId>
     <artifactId>YunZhong</artifactId>
@@ -37,7 +43,15 @@
 <!--                <artifactId>bukkit</artifactId>-->
 <!--                <version>1.8-R0.1-SNAPSHOT</version>-->
 <!--    </dependency>-->
+
+
     <dependencies>
+        <dependency>
+            <groupId>com.github.YiC200333</groupId>
+            <artifactId>XConomyAPI</artifactId>
+            <version>2.19.1</version>
+            <scope>provided</scope>
+        </dependency>
         <!--This adds the Spigot API artifact to the build -->
         <dependency>
             <groupId>org.spigotmc</groupId>
@@ -70,5 +84,7 @@
             <type>jar</type>
             <scope>provided</scope>
         </dependency>
+
+
     </dependencies>
     </project>
