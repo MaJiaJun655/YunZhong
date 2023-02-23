@@ -69,13 +69,13 @@ public class Profile {
 		FileWriter fWriter = null;
 
 		try {
-			fWriter = new FileWriter("plugins/yzzm/yzzm.properties");
+			fWriter = new FileWriter("plugins/YunZhong/YunZhong.properties");
 		} catch (IOException var8) {
 			var8.printStackTrace();
 		}
 
 		try {
-			properties.store(fWriter, "yzzm");
+			properties.store(fWriter, "YunZhong");
 		} catch (IOException var7) {
 			var7.printStackTrace();
 		}
@@ -91,7 +91,7 @@ public class Profile {
 	public static final FileInputStream initialization() {
 		FileInputStream fis = null;
 		new Properties();
-		File file = new File("plugins/yzzm/yzzm.properties");
+		File file = new File("plugins/YunZhong/YunZhong.properties");
 
 		try {
 			fis = new FileInputStream(file);

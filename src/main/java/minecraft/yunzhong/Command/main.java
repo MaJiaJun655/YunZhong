@@ -1,5 +1,9 @@
 package minecraft.yunzhong.Command;
 
+import com.bekvon.bukkit.residence.Residence;
+import com.bekvon.bukkit.residence.protection.ClaimedResidence;
+import com.bekvon.bukkit.residence.protection.FlagPermissions;
+import me.yic.xconomy.api.XConomyAPI;
 import minecraft.yunzhong.api.CommandApi;
 import minecraft.yunzhong.api.McLogger;
 import minecraft.yunzhong.api.Profile;
@@ -13,6 +17,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -21,6 +26,7 @@ import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -187,11 +193,11 @@ public class main extends JavaPlugin implements Listener {
     public void banitems(PlayerInteractEvent pie) {		//当玩家使用非法物品时，将取消用其发生的所有事件
         Player pla = pie.getPlayer();
         Material[] MaterialList = new Material[]{
-                Material.WITHER_SKELETON_SPAWN_EGG,
-                Material.VILLAGER_SPAWN_EGG,
-                Material.VINDICATOR_SPAWN_EGG,
-                Material.SHULKER_SPAWN_EGG,
-                Material.EVOKER_SPAWN_EGG
+//                Material.WITHER_SKELETON_SPAWN_EGG,
+//                Material.VILLAGER_SPAWN_EGG,
+//                Material.VINDICATOR_SPAWN_EGG,
+//                Material.SHULKER_SPAWN_EGG,
+//                Material.EVOKER_SPAWN_EGG
         };
         if(!pla.hasPermission("yzzm.banitem")) {
             for (Material material : MaterialList) {
@@ -373,34 +379,34 @@ public class main extends JavaPlugin implements Listener {
         McLogger.info("[玩家聊天-"+sdf.format(new Date())+"]"+playerChatEvent.getPlayer().getName()+"： "+playerChatEvent.getMessage());
     }
 
-    @EventHandler
-    public void entityEvent(BlockPlaceEvent entityEvent){
-        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
-        if(entityEvent.getBlock().getType() == Material.SPAWNER){
-            Location location = entityEvent.getBlock().getLocation();
-            McLogger.info("[刷怪笼放置事件-"+sdf.format(new Date())+"]"+"玩家名："+entityEvent.getPlayer().getName()+"\t世界名："+location.getWorld().getName()+"|X"+location.getBlockX()+"|Y"+location.getBlockY()+"|Z"+location.getBlockZ());
-        }
-    }
-    @EventHandler
-    public void onInteract(PlayerInteractEvent e) {
-        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
-        if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
-            if (e.hasItem()) {
-                if (e.getMaterial().toString().contains("SPAWN_EGG")) {
-                    Location location = e.getClickedBlock().getLocation();
-                    if (e.getClickedBlock() != null && e.getClickedBlock().getType().equals(Material.SPAWNER)) {
-                        McLogger.info("[刷怪笼改变事件-"+sdf.format(new Date())+"]"+"玩家名："+e.getPlayer().getName()+"\t世界名："+location.getWorld().getName()+"|X"+location.getBlockX()+"|Y"+location.getBlockY()+"|Z"+location.getBlockZ()+"\t生物蛋："+e.getMaterial());
-                    }
-                }else if (e.getMaterial().toString().contains("RAIL")) {
-                    Location location = e.getClickedBlock().getLocation();
-                    if (e.getClickedBlock() != null && e.getClickedBlock().getType().equals(Material.OBSERVER)) {
-                        e.getPlayer().sendMessage(ChatColor.RED + "轨道不可以放置在该物体上");
-                        e.setCancelled(true);
-                    }
-                }
-            }
-        }
-    }
+//    @EventHandler
+//    public void entityEvent(BlockPlaceEvent entityEvent){
+//        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+//        if(entityEvent.getBlock().getType() == Material.SPAWNER){
+//            Location location = entityEvent.getBlock().getLocation();
+//            McLogger.info("[刷怪笼放置事件-"+sdf.format(new Date())+"]"+"玩家名："+entityEvent.getPlayer().getName()+"\t世界名："+location.getWorld().getName()+"|X"+location.getBlockX()+"|Y"+location.getBlockY()+"|Z"+location.getBlockZ());
+//        }
+//    }
+//    @EventHandler
+//    public void onInteract(PlayerInteractEvent e) {
+//        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+//        if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
+//            if (e.hasItem()) {
+//                if (e.getMaterial().toString().contains("SPAWN_EGG")) {
+//                    Location location = e.getClickedBlock().getLocation();
+//                    if (e.getClickedBlock() != null && e.getClickedBlock().getType().equals(Material.SPAWNER)) {
+//                        McLogger.info("[刷怪笼改变事件-"+sdf.format(new Date())+"]"+"玩家名："+e.getPlayer().getName()+"\t世界名："+location.getWorld().getName()+"|X"+location.getBlockX()+"|Y"+location.getBlockY()+"|Z"+location.getBlockZ()+"\t生物蛋："+e.getMaterial());
+//                    }
+//                }else if (e.getMaterial().toString().contains("RAIL")) {
+//                    Location location = e.getClickedBlock().getLocation();
+//                    if (e.getClickedBlock() != null && e.getClickedBlock().getType().equals(Material.OBSERVER)) {
+//                        e.getPlayer().sendMessage(ChatColor.RED + "轨道不可以放置在该物体上");
+//                        e.setCancelled(true);
+//                    }
+//                }
+//            }
+//        }
+//    }
 
     @EventHandler
     public void onEntityExplode(EntityExplodeEvent explodeEvent) {  //爆炸事件
@@ -410,5 +416,47 @@ public class main extends JavaPlugin implements Listener {
         }
     }
 
+    @EventHandler
+    public void onEntityExplode(BlockBreakEvent breakEvent) {  //当方块被破坏
+        if(breakEvent.getPlayer().getWorld().getName().equals("world")){
+            Residence residence = new Residence();
+            FlagPermissions.addFlag("build");
+            Location loc = breakEvent.getBlock().getLocation();
+            ClaimedResidence res = residence.getResidenceManager().getByLoc(loc);
+            if(res==null) {
+                Player player = breakEvent.getPlayer();
+                XConomyAPI xcapi = new XConomyAPI();
+                int t = xcapi.changePlayerBalance(player.getUniqueId(), player.getName(), BigDecimal.valueOf(1), false);
+                if (t == 0) {
+                    player.sendMessage(ChatColor.YELLOW + "在非领地区域已扣除：1金币作为本次操作的税费");
+                } else if (t == 2) {
+                    player.sendMessage(ChatColor.BLUE + "你的余额不足无法在此世界非个人领地区域进行开发");
+                    breakEvent.setCancelled(true);
+                }
+            }
+        }
+    }
+
+
+    @EventHandler
+    public void onEntityExplode(BlockPlaceEvent placeEvent) {  //当方块被放置
+        if(placeEvent.getPlayer().getWorld().getName().equals("world")){
+            Residence residence = new Residence();
+            FlagPermissions.addFlag("build");
+            Location loc = placeEvent.getBlock().getLocation();
+            ClaimedResidence res = residence.getResidenceManager().getByLoc(loc);
+            if(res==null) {
+                Player player = placeEvent.getPlayer();
+                XConomyAPI xcapi = new XConomyAPI();
+                int t = xcapi.changePlayerBalance(player.getUniqueId(), player.getName(), BigDecimal.valueOf(1), false);
+                if (t == 0) {
+                    player.sendMessage(ChatColor.YELLOW + "在非领地区域已扣除：1金币作为本次操作的税费");
+                } else if (t == 2) {
+                    player.sendMessage(ChatColor.BLUE + "你的余额不足无法在此世界非个人领地区域进行开发");
+                    placeEvent.setCancelled(true);
+                }
+            }
+        }
+    }
 
 }
