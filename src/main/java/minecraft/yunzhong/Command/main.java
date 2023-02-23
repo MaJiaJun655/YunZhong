@@ -5,10 +5,15 @@
 
 package minecraft.yunzhong.Command;
 
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import com.bekvon.bukkit.residence.Residence;
+import com.bekvon.bukkit.residence.protection.ClaimedResidence;
+import com.bekvon.bukkit.residence.protection.FlagPermissions;
+import me.yic.xconomy.api.XConomyAPI;
 import minecraft.yunzhong.api.CommandApi;
 import minecraft.yunzhong.api.McLogger;
 import minecraft.yunzhong.api.Profile;
@@ -26,6 +31,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -373,6 +379,49 @@ public class main extends JavaPlugin implements Listener {
         if(this.getConfig().getStringList("noBlastWorld").contains(explodeEvent.getLocation().getWorld().getName())){
             List<Block> blocks = explodeEvent.blockList();
             blocks.clear();
+        }
+    }
+
+    @EventHandler
+    public void onEntityExplode(BlockBreakEvent breakEvent) {  //当方块被破坏
+        if(breakEvent.getPlayer().getWorld().getName().equals("world")){
+            Residence residence = new Residence();
+            FlagPermissions.addFlag("build");
+            Location loc = breakEvent.getBlock().getLocation();
+            ClaimedResidence res = residence.getResidenceManager().getByLoc(loc);
+            if(res==null) {
+                Player player = breakEvent.getPlayer();
+                XConomyAPI xcapi = new XConomyAPI();
+                int t = xcapi.changePlayerBalance(player.getUniqueId(), player.getName(), BigDecimal.valueOf(1), false);
+                if (t == 0) {
+                    player.sendMessage(ChatColor.YELLOW + "在非领地区域已扣除：1金币作为本次操作的税费");
+                } else if (t == 2) {
+                    player.sendMessage(ChatColor.BLUE + "你的余额不足无法在此世界非个人领地区域进行开发");
+                    breakEvent.setCancelled(true);
+                }
+            }
+        }
+    }
+
+
+    @EventHandler
+    public void onEntityExplode(BlockPlaceEvent placeEvent) {  //当方块被放置
+        if(placeEvent.getPlayer().getWorld().getName().equals("world")){
+            Residence residence = new Residence();
+            FlagPermissions.addFlag("build");
+            Location loc = placeEvent.getBlock().getLocation();
+            ClaimedResidence res = residence.getResidenceManager().getByLoc(loc);
+            if(res==null) {
+                Player player = placeEvent.getPlayer();
+                XConomyAPI xcapi = new XConomyAPI();
+                int t = xcapi.changePlayerBalance(player.getUniqueId(), player.getName(), BigDecimal.valueOf(1), false);
+                if (t == 0) {
+                    player.sendMessage(ChatColor.YELLOW + "在非领地区域已扣除：1金币作为本次操作的税费");
+                } else if (t == 2) {
+                    player.sendMessage(ChatColor.BLUE + "你的余额不足无法在此世界非个人领地区域进行开发");
+                    placeEvent.setCancelled(true);
+                }
+            }
         }
     }
 
