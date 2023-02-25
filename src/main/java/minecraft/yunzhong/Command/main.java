@@ -96,10 +96,8 @@ public class main extends JavaPlugin implements Listener {
                                 if (this.getConfig().getStringList("rtp").contains(args[1])) {
                                     CommandApi.rtp(sender,args[1]);
                                 }else{
-                                    play.sendMessage(ChatColor.RED+"这个世界貌似未允许进行随机传送！");
+                                    play.sendMessage(ChatColor.RED+"这个世界未被允许传送！");
                                 }
-                            }else {
-                                CommandApi.rtp(sender);
                             }
                             break;
                         case "toemail":
