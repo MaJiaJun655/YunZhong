@@ -11,17 +11,17 @@ import java.util.Date;
 import java.util.List;
 
 import com.bekvon.bukkit.residence.Residence;
+import com.bekvon.bukkit.residence.ResidenceCommandListener;
+import com.bekvon.bukkit.residence.api.ResidenceApi;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
+import com.bekvon.bukkit.residence.protection.ResidencePermissions;
 import me.yic.xconomy.api.XConomyAPI;
 import minecraft.yunzhong.api.CommandApi;
 import minecraft.yunzhong.api.McLogger;
 import minecraft.yunzhong.api.Profile;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Chunk;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import minecraft.yunzhong.api.StrUtil;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -43,12 +43,13 @@ import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.event.player.PlayerToggleFlightEvent;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class main extends JavaPlugin implements Listener {
     public main() {
     }
-
+    public static String playerName = "";
     public void onEnable() {
         this.getLogger().info("[云中之梦安全框架已加载]");
         this.saveDefaultConfig();
@@ -57,6 +58,10 @@ public class main extends JavaPlugin implements Listener {
         Profile.ReloadProfile();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss");
         sdf.format(new Date());
+    }
+
+    public void setName(String name){
+        playerName = name;
     }
 
     public boolean onCommand(CommandSender sender, Command cmd, String lable, String[] args) {
@@ -85,6 +90,18 @@ public class main extends JavaPlugin implements Listener {
                             break;
                         case "moneygo":
                             CommandApi.moneyGo(sender);
+                            break;
+                        case "rtp":
+                            if(!StrUtil.toString(args[1]).equals("")){
+                                if (this.getConfig().getStringList("rtp").contains(args[1])) {
+                                    CommandApi.rtp(sender,args[1]);
+                                }else{
+                                    play.sendMessage(ChatColor.RED+"这个世界貌似未允许进行随机传送！");
+                                }
+                            }else {
+                                CommandApi.rtp(sender);
+                            }
+                            break;
                         case "toemail":
                         default:
                             break;
@@ -192,12 +209,18 @@ public class main extends JavaPlugin implements Listener {
     @EventHandler
     public void banitems(PlayerInteractEvent pie) {
         Player pla = pie.getPlayer();
-        Material[] MaterialList = new Material[]{Material.WITHER_SKELETON_SPAWN_EGG, Material.VILLAGER_SPAWN_EGG, Material.VINDICATOR_SPAWN_EGG, Material.SHULKER_SPAWN_EGG, Material.EVOKER_SPAWN_EGG};
+        Material[] MaterialList = new Material[]{
+//                Material.WITHER_SKELETON_SPAWN_EGG,
+//                Material.VILLAGER_SPAWN_EGG,
+//                Material.VINDICATOR_SPAWN_EGG,
+//                Material.SHULKER_SPAWN_EGG,
+//                Material.EVOKER_SPAWN_EGG
+        };
         if (!pla.hasPermission("yzzm.banitem")) {
             Material[] var4 = MaterialList;
             int var5 = MaterialList.length;
 
-            for(int var6 = 0; var6 < var5; ++var6) {
+            for (int var6 = 0; var6 < var5; ++var6) {
                 Material material = var4[var6];
                 if (pie.getMaterial() == material) {
                     pie.setCancelled(true);
@@ -269,7 +292,7 @@ public class main extends JavaPlugin implements Listener {
                 var6 = entityList;
                 var7 = entityList.length;
 
-                for(var8 = 0; var8 < var7; ++var8) {
+                for (var8 = 0; var8 < var7; ++var8) {
                     entity = var6[var8];
                     if (entity.getType() == EntityType.ENDERMAN) {
                         ++mcount;
@@ -285,7 +308,7 @@ public class main extends JavaPlugin implements Listener {
                 var6 = entityList;
                 var7 = entityList.length;
 
-                for(var8 = 0; var8 < var7; ++var8) {
+                for (var8 = 0; var8 < var7; ++var8) {
                     entity = var6[var8];
                     if (entity.getType() == EntityType.GUARDIAN) {
                         ++scount;
@@ -301,7 +324,7 @@ public class main extends JavaPlugin implements Listener {
                 var6 = entityList;
                 var7 = entityList.length;
 
-                for(var8 = 0; var8 < var7; ++var8) {
+                for (var8 = 0; var8 < var7; ++var8) {
                     entity = var6[var8];
                     if (entity.getType() == EntityType.CREEPER || entity.getType() == EntityType.ZOMBIE || entity.getType() == EntityType.WITCH || entity.getType() == EntityType.SKELETON || entity.getType() == EntityType.BLAZE || entity.getType() == EntityType.CAVE_SPIDER || entity.getType() == EntityType.SPIDER) {
                         ++monstercount;
@@ -325,7 +348,7 @@ public class main extends JavaPlugin implements Listener {
         Entity[] var5 = entityList;
         int var6 = entityList.length;
 
-        for(int var7 = 0; var7 < var6; ++var7) {
+        for (int var7 = 0; var7 < var6; ++var7) {
             Entity entity = var5[var7];
             if (entity.getType() == EntityType.CREEPER || entity.getType() == EntityType.GUARDIAN || entity.getType() == EntityType.SPIDER || entity.getType() == EntityType.ZOMBIE || entity.getType() == EntityType.SKELETON || entity.getType() == EntityType.ENDERMAN) {
                 ++monstercount;
@@ -344,86 +367,108 @@ public class main extends JavaPlugin implements Listener {
         McLogger.info("[玩家聊天-" + sdf.format(new Date()) + "]" + playerChatEvent.getPlayer().getName() + "： " + playerChatEvent.getMessage());
     }
 
-    @EventHandler
-    public void entityEvent(BlockPlaceEvent entityEvent) {
-        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
-        if (entityEvent.getBlock().getType() == Material.SPAWNER) {
-            Location location = entityEvent.getBlock().getLocation();
-            McLogger.info("[刷怪笼放置事件-" + sdf.format(new Date()) + "]玩家名：" + entityEvent.getPlayer().getName() + "\t世界名：" + location.getWorld().getName() + "|X" + location.getBlockX() + "|Y" + location.getBlockY() + "|Z" + location.getBlockZ());
-        }
-
-    }
-
-    @EventHandler
-    public void onInteract(PlayerInteractEvent e) {
-        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
-        if (e.getAction() == Action.RIGHT_CLICK_BLOCK && e.hasItem()) {
-            Location location;
-            if (e.getMaterial().toString().contains("SPAWN_EGG")) {
-                location = e.getClickedBlock().getLocation();
-                if (e.getClickedBlock() != null && e.getClickedBlock().getType().equals(Material.SPAWNER)) {
-                    McLogger.info("[刷怪笼改变事件-" + sdf.format(new Date()) + "]玩家名：" + e.getPlayer().getName() + "\t世界名：" + location.getWorld().getName() + "|X" + location.getBlockX() + "|Y" + location.getBlockY() + "|Z" + location.getBlockZ() + "\t生物蛋：" + e.getMaterial());
-                }
-            } else if (e.getMaterial().toString().contains("RAIL")) {
-                location = e.getClickedBlock().getLocation();
-                if (e.getClickedBlock() != null && e.getClickedBlock().getType().equals(Material.OBSERVER)) {
-                    e.getPlayer().sendMessage(ChatColor.RED + "轨道不可以放置在该物体上");
-                    e.setCancelled(true);
-                }
-            }
-        }
-    }
+//    @EventHandler
+//    public void entityEvent(BlockPlaceEvent entityEvent) {
+//        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+//        if (entityEvent.getBlock().getType() == Material.SPAWNER) {
+//            Location location = entityEvent.getBlock().getLocation();
+//            McLogger.info("[刷怪笼放置事件-" + sdf.format(new Date()) + "]玩家名：" + entityEvent.getPlayer().getName() + "\t世界名：" + location.getWorld().getName() + "|X" + location.getBlockX() + "|Y" + location.getBlockY() + "|Z" + location.getBlockZ());
+//        }
+//
+//    }
+//
+//    @EventHandler
+//    public void onInteract(PlayerInteractEvent e) {
+//        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+//        if (e.getAction() == Action.RIGHT_CLICK_BLOCK && e.hasItem()) {
+//            Location location;
+//            if (e.getMaterial().toString().contains("SPAWN_EGG")) {
+//                location = e.getClickedBlock().getLocation();
+//                if (e.getClickedBlock() != null && e.getClickedBlock().getType().equals(Material.SPAWNER)) {
+//                    McLogger.info("[刷怪笼改变事件-" + sdf.format(new Date()) + "]玩家名：" + e.getPlayer().getName() + "\t世界名：" + location.getWorld().getName() + "|X" + location.getBlockX() + "|Y" + location.getBlockY() + "|Z" + location.getBlockZ() + "\t生物蛋：" + e.getMaterial());
+//                }
+//            } else if (e.getMaterial().toString().contains("RAIL")) {
+//                location = e.getClickedBlock().getLocation();
+//                if (e.getClickedBlock() != null && e.getClickedBlock().getType().equals(Material.OBSERVER)) {
+//                    e.getPlayer().sendMessage(ChatColor.RED + "轨道不可以放置在该物体上");
+//                    e.setCancelled(true);
+//                }
+//            }
+//        }
+//    }
 
     @EventHandler
     public void onEntityExplode(EntityExplodeEvent explodeEvent) {  //爆炸事件
-        if(this.getConfig().getStringList("noBlastWorld").contains(explodeEvent.getLocation().getWorld().getName())){
+        if (this.getConfig().getStringList("noBlastWorld").contains(explodeEvent.getLocation().getWorld().getName())) {
             List<Block> blocks = explodeEvent.blockList();
             blocks.clear();
         }
     }
 
     @EventHandler
-    public void onEntityExplode(BlockBreakEvent breakEvent) {  //当方块被破坏
-        if(breakEvent.getPlayer().getWorld().getName().equals("world")){
-            Residence residence = new Residence();
-            FlagPermissions.addFlag("build");
-            Location loc = breakEvent.getBlock().getLocation();
-            ClaimedResidence res = residence.getResidenceManager().getByLoc(loc);
-            if(res==null) {
+    public void onBreakEvent(BlockBreakEvent breakEvent) {  //当方块被破坏
+        if (breakEvent.getPlayer().getWorld().getName().equals("world")) {
+            Plugin resPlug = getServer().getPluginManager().getPlugin("Residence");
+            if (resPlug != null) {
+                Location loc = breakEvent.getBlock().getLocation();
+                ClaimedResidence res = ResidenceApi.getResidenceManager().getByLoc(loc);
                 Player player = breakEvent.getPlayer();
-                XConomyAPI xcapi = new XConomyAPI();
-                int t = xcapi.changePlayerBalance(player.getUniqueId(), player.getName(), BigDecimal.valueOf(1), false);
-                if (t == 0) {
-                    player.sendMessage(ChatColor.YELLOW + "在非领地区域已扣除：1金币作为本次操作的税费");
-                } else if (t == 2) {
-                    player.sendMessage(ChatColor.BLUE + "你的余额不足无法在此世界非个人领地区域进行开发");
-                    breakEvent.setCancelled(true);
+                if (res != null) {
+                    ResidencePermissions perms = res.getPermissions();
+                    boolean hasPermission = perms.playerHas(player.getName(), "build", true);
+                    if(!hasPermission) {
+                        XConomyAPI xcapi = new XConomyAPI();
+                        int t = xcapi.changePlayerBalance(player.getUniqueId(), player.getName(), BigDecimal.valueOf(1), false);
+                        if (t == 0) {
+                            player.sendMessage(ChatColor.YELLOW + "在非领地区域已扣除：1金币作为本次操作的税费");
+                        } else if (t == 2) {
+                            player.sendMessage(ChatColor.BLUE + "你的余额不足无法在此世界非个人领地区域进行开发");
+                            breakEvent.setCancelled(true);
+                        }
+                    }
+                }else{
+                    XConomyAPI xcapi = new XConomyAPI();
+                    int t = xcapi.changePlayerBalance(player.getUniqueId(), player.getName(), BigDecimal.valueOf(1), false);
+                    if (t == 0) {
+                        player.sendMessage(ChatColor.YELLOW + "在非领地区域已扣除：1金币作为本次操作的税费");
+                    } else if (t == 2) {
+                        player.sendMessage(ChatColor.BLUE + "你的余额不足无法在此世界非个人领地区域进行开发");
+                        breakEvent.setCancelled(true);
+                    }
                 }
             }
         }
     }
 
-
-    @EventHandler
-    public void onEntityExplode(BlockPlaceEvent placeEvent) {  //当方块被放置
-        if(placeEvent.getPlayer().getWorld().getName().equals("world")){
-            Residence residence = new Residence();
-            FlagPermissions.addFlag("build");
-            Location loc = placeEvent.getBlock().getLocation();
-            ClaimedResidence res = residence.getResidenceManager().getByLoc(loc);
-            if(res==null) {
+        @EventHandler
+        public void onPlaceEvent (BlockPlaceEvent placeEvent) {  //当方块被放置
+            if (placeEvent.getPlayer().getWorld().getName().equals("world")) {
+                Location loc = placeEvent.getBlock().getLocation();
+                ClaimedResidence res = ResidenceApi.getResidenceManager().getByLoc(loc);
                 Player player = placeEvent.getPlayer();
-                XConomyAPI xcapi = new XConomyAPI();
-                int t = xcapi.changePlayerBalance(player.getUniqueId(), player.getName(), BigDecimal.valueOf(1), false);
-                if (t == 0) {
-                    player.sendMessage(ChatColor.YELLOW + "在非领地区域已扣除：1金币作为本次操作的税费");
-                } else if (t == 2) {
-                    player.sendMessage(ChatColor.BLUE + "你的余额不足无法在此世界非个人领地区域进行开发");
-                    placeEvent.setCancelled(true);
+                if (res != null) {
+                    ResidencePermissions perms = res.getPermissions();
+                    boolean hasPermission = perms.playerHas(player.getName(), "build", true);
+                    if(!hasPermission) {
+                        XConomyAPI xcapi = new XConomyAPI();
+                        int t = xcapi.changePlayerBalance(player.getUniqueId(), player.getName(), BigDecimal.valueOf(1), false);
+                        if (t == 0) {
+                            player.sendMessage(ChatColor.YELLOW + "在非领地区域已扣除：1金币作为本次操作的税费");
+                        } else if (t == 2) {
+                            player.sendMessage(ChatColor.BLUE + "你的余额不足无法在此世界非个人领地区域进行开发");
+                            placeEvent.setCancelled(true);
+                        }
+                    }
+                }else{
+                    XConomyAPI xcapi = new XConomyAPI();
+                    int t = xcapi.changePlayerBalance(player.getUniqueId(), player.getName(), BigDecimal.valueOf(1), false);
+                    if (t == 0) {
+                        player.sendMessage(ChatColor.YELLOW + "在非领地区域已扣除：1金币作为本次操作的税费");
+                    } else if (t == 2) {
+                        player.sendMessage(ChatColor.BLUE + "你的余额不足无法在此世界非个人领地区域进行开发");
+                        placeEvent.setCancelled(true);
+                    }
                 }
             }
         }
-    }
-
-
 }
