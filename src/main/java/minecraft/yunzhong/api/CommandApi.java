@@ -8,6 +8,7 @@ package minecraft.yunzhong.api;
 import java.util.List;
 import java.util.Random;
 
+import net.Zrips.CMILib.ActionBar.CMIActionBar;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
@@ -45,14 +46,13 @@ public class CommandApi extends JavaPlugin {
 			sender.getServer().broadcastMessage(ChatColor.YELLOW + "恭喜" + play.getName() + "使用致富卡，获得了" + money + "金币！");
 			play.getServer().dispatchCommand(play.getServer().getConsoleSender(), "eco give " + play.getName() + " " + money);
 		} else {
-			play.sendMessage("请使用菜单操作！");
+			CMIActionBar.send(play,"请使用菜单操作！");
 		}
 	}
 
 
 
 	public static final void rtp(CommandSender sender,String worldName) {
-		List<Material> BAND_MATERIALES;
 		Player play = Bukkit.getPlayer(sender.getName());
 		World w = Bukkit.getWorld(worldName);
 		if(w!=null) {
@@ -60,30 +60,35 @@ public class CommandApi extends JavaPlugin {
 			int n = random.nextInt(10);
 			int x = 0;
 			int z = 0;
-			if (n == 1 || n == 3 || n == 5 || n == 7 || n == 9) {
-				x = x - random.nextInt(1000);
+			while (true) {
+				if (n == 1 || n == 3 || n == 5 || n == 7 || n == 9) {
+					x = x - random.nextInt(1000);
+					n = random.nextInt(10);
+				} else {
+					x = random.nextInt(1000);
+					n = random.nextInt(10);
+				}
+				if (n == 1 || n == 3 || n == 5 || n == 7 || n == 9) {
+					z = z - random.nextInt(1000);
+				} else {
+					z = random.nextInt(1000);
+				}
+				int a = w.getHighestBlockYAt(x, z);
+				Location loc = new Location(w, x, a + 1, z);
+				Location t = new Location(w, x, a, z);
+				Block block = w.getBlockAt(t);
+				if(
+						block.getType()!=Material.WATER
+						&&block.getType()!=Material.LAVA
+						&&block.getType()!=Material.SNOW
+						&&block.getType()!=Material.SNOW_BLOCK
+						&&block.getType()!=Material.PACKED_ICE
+				) {
+					play.teleport(loc);
+					break;
+				}
 				n = random.nextInt(10);
-			} else {
-				x = random.nextInt(1000);
-				n = random.nextInt(10);
 			}
-			if (n == 1 || n == 3 || n == 5 || n == 7 || n == 9) {
-				z = z - random.nextInt(1000);
-			} else {
-				z = random.nextInt(1000);
-
-			}
-			int a = w.getHighestBlockYAt(x, z);
-			Location loc = new Location(w, x, a + 1, z);
-			Block block = w.getBlockAt(loc);
-			while (block.getType() == Material.WATER || block.getType() == Material.LAVA) {
-				x = (Math.abs(random.nextInt()) % (1000 - 0 + 1)) + 0;
-				z = (Math.abs(random.nextInt()) % (1000 - 0 + 1)) + 0;
-				a = w.getHighestBlockYAt(x, z);
-				loc = new Location(w, x, a + 1, z);
-				block = w.getBlockAt(loc);
-			}
-			play.teleport(loc);
 		}else{
 			play.sendMessage(ChatColor.RED+"世界不存在！");
 		}

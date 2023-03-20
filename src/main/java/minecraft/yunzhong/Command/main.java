@@ -21,6 +21,7 @@ import minecraft.yunzhong.api.CommandApi;
 import minecraft.yunzhong.api.McLogger;
 import minecraft.yunzhong.api.Profile;
 import minecraft.yunzhong.api.StrUtil;
+import net.Zrips.CMILib.ActionBar.CMIActionBar;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
@@ -96,7 +97,7 @@ public class main extends JavaPlugin implements Listener {
                                 if (this.getConfig().getStringList("rtp").contains(args[1])) {
                                     CommandApi.rtp(sender,args[1]);
                                 }else{
-                                    play.sendMessage(ChatColor.RED+"这个世界未被允许传送！");
+                                    CMIActionBar.send(play,ChatColor.RED+"这个世界未被允许传送！");
                                 }
                             }
                             break;
@@ -405,67 +406,77 @@ public class main extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onBreakEvent(BlockBreakEvent breakEvent) {  //当方块被破坏
-        if (breakEvent.getPlayer().getWorld().getName().equals("world")) {
-            Plugin resPlug = getServer().getPluginManager().getPlugin("Residence");
-            if (resPlug != null) {
-                Location loc = breakEvent.getBlock().getLocation();
-                ClaimedResidence res = ResidenceApi.getResidenceManager().getByLoc(loc);
-                Player player = breakEvent.getPlayer();
-                if (res != null) {
-                    ResidencePermissions perms = res.getPermissions();
-                    boolean hasPermission = perms.playerHas(player.getName(), "build", true);
-                    if(!hasPermission) {
+        Player player = breakEvent.getPlayer();
+        String worldName = player.getWorld().getName();
+        if (!player.isOp()) {
+            if (worldName.equals("world")) {
+                Plugin resPlug = getServer().getPluginManager().getPlugin("Residence");
+                if (resPlug != null) {
+                    Location loc = breakEvent.getBlock().getLocation();
+                    ClaimedResidence res = ResidenceApi.getResidenceManager().getByLoc(loc);
+                    if (res != null) {
+                        ResidencePermissions perms = res.getPermissions();
+                        boolean hasPermission = perms.playerHas(player.getName(), "build", true);
+                        if (!hasPermission) {
+                            XConomyAPI xcapi = new XConomyAPI();
+                            int t = xcapi.changePlayerBalance(player.getUniqueId(), player.getName(), BigDecimal.valueOf(1), false);
+                            if (t == 0) {
+                                CMIActionBar.send(player, ChatColor.YELLOW + "非领地区域，扣除 1 金币");
+                            } else if (t == 2) {
+                                CMIActionBar.send(player, ChatColor.BLUE + "金币不足无法在此世界非领地区域进行建造");
+                                breakEvent.setCancelled(true);
+                            }
+                        }
+                    } else {
                         XConomyAPI xcapi = new XConomyAPI();
                         int t = xcapi.changePlayerBalance(player.getUniqueId(), player.getName(), BigDecimal.valueOf(1), false);
                         if (t == 0) {
-                            player.sendMessage(ChatColor.YELLOW + "在非领地区域已扣除：1金币作为本次操作的税费");
+                            CMIActionBar.send(player, ChatColor.YELLOW + "非领地区域，扣除 1 金币");
                         } else if (t == 2) {
-                            player.sendMessage(ChatColor.BLUE + "你的余额不足无法在此世界非个人领地区域进行开发");
+                            CMIActionBar.send(player, ChatColor.BLUE + "金币不足无法在此世界非领地区域进行建造");
                             breakEvent.setCancelled(true);
                         }
                     }
-                }else{
-                    XConomyAPI xcapi = new XConomyAPI();
-                    int t = xcapi.changePlayerBalance(player.getUniqueId(), player.getName(), BigDecimal.valueOf(1), false);
-                    if (t == 0) {
-                        player.sendMessage(ChatColor.YELLOW + "在非领地区域已扣除：1金币作为本次操作的税费");
-                    } else if (t == 2) {
-                        player.sendMessage(ChatColor.BLUE + "你的余额不足无法在此世界非个人领地区域进行开发");
-                        breakEvent.setCancelled(true);
-                    }
                 }
+            } else if (worldName.equals("spawn")) {
+                breakEvent.setCancelled(true);
             }
         }
     }
 
         @EventHandler
         public void onPlaceEvent (BlockPlaceEvent placeEvent) {  //当方块被放置
-            if (placeEvent.getPlayer().getWorld().getName().equals("world")) {
-                Location loc = placeEvent.getBlock().getLocation();
-                ClaimedResidence res = ResidenceApi.getResidenceManager().getByLoc(loc);
-                Player player = placeEvent.getPlayer();
-                if (res != null) {
-                    ResidencePermissions perms = res.getPermissions();
-                    boolean hasPermission = perms.playerHas(player.getName(), "build", true);
-                    if(!hasPermission) {
+            Player player = placeEvent.getPlayer();
+            String worldName = player.getWorld().getName();
+            if (!player.isOp()) {
+                if (worldName.equals("world")) {
+                    Location loc = placeEvent.getBlock().getLocation();
+                    ClaimedResidence res = ResidenceApi.getResidenceManager().getByLoc(loc);
+                    if (res != null) {
+                        ResidencePermissions perms = res.getPermissions();
+                        boolean hasPermission = perms.playerHas(player.getName(), "build", true);
+                        if (!hasPermission) {
+                            XConomyAPI xcapi = new XConomyAPI();
+                            int t = xcapi.changePlayerBalance(player.getUniqueId(), player.getName(), BigDecimal.valueOf(1), false);
+                            if (t == 0) {
+                                CMIActionBar.send(player, ChatColor.YELLOW + "非领地区域，扣除 1 金币");
+                            } else if (t == 2) {
+                                CMIActionBar.send(player, ChatColor.BLUE + "金币不足无法在此世界非领地区域进行建造");
+                                placeEvent.setCancelled(true);
+                            }
+                        }
+                    } else {
                         XConomyAPI xcapi = new XConomyAPI();
                         int t = xcapi.changePlayerBalance(player.getUniqueId(), player.getName(), BigDecimal.valueOf(1), false);
                         if (t == 0) {
-                            player.sendMessage(ChatColor.YELLOW + "在非领地区域已扣除：1金币作为本次操作的税费");
+                            CMIActionBar.send(player, ChatColor.YELLOW + "非领地区域，扣除 1 金币");
                         } else if (t == 2) {
-                            player.sendMessage(ChatColor.BLUE + "你的余额不足无法在此世界非个人领地区域进行开发");
+                            CMIActionBar.send(player, ChatColor.BLUE + "金币不足无法在此世界非领地区域进行建造");
                             placeEvent.setCancelled(true);
                         }
                     }
-                }else{
-                    XConomyAPI xcapi = new XConomyAPI();
-                    int t = xcapi.changePlayerBalance(player.getUniqueId(), player.getName(), BigDecimal.valueOf(1), false);
-                    if (t == 0) {
-                        player.sendMessage(ChatColor.YELLOW + "在非领地区域已扣除：1金币作为本次操作的税费");
-                    } else if (t == 2) {
-                        player.sendMessage(ChatColor.BLUE + "你的余额不足无法在此世界非个人领地区域进行开发");
-                        placeEvent.setCancelled(true);
-                    }
+                } else if (worldName.equals("spawn")) {
+                    placeEvent.setCancelled(true);
                 }
             }
         }
