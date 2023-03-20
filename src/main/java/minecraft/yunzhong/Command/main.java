@@ -29,18 +29,13 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.entity.CreatureSpawnEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.*;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
-import org.bukkit.event.entity.EntityExplodeEvent;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.PlayerChangedWorldEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerSwapHandItemsEvent;
-import org.bukkit.event.player.PlayerToggleFlightEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import static minecraft.yunzhong.api.CommandApi.isHaveResidenceBuildMoney;
 
 public class main extends JavaPlugin implements Listener {
     public main() {
@@ -334,8 +329,8 @@ public class main extends JavaPlugin implements Listener {
     }
 
     @EventHandler
-    public void AntiMonster2(EntityDamageEvent DamageByEntityEvent) {
-        Chunk chunk = DamageByEntityEvent.getEntity().getLocation().getChunk();
+    public void AntiMonster2(EntityDamageEvent event) {
+        Chunk chunk = event.getEntity().getLocation().getChunk();
         int monstercount = 0;
         Entity[] entityList = chunk.getEntities();
         Entity[] var5 = entityList;
@@ -355,9 +350,9 @@ public class main extends JavaPlugin implements Listener {
     }
 
     @EventHandler
-    public void playerSay(AsyncPlayerChatEvent playerChatEvent) {
+    public void playerSay(AsyncPlayerChatEvent event) {
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
-        McLogger.info("[玩家聊天-" + sdf.format(new Date()) + "]" + playerChatEvent.getPlayer().getName() + "： " + playerChatEvent.getMessage());
+        McLogger.info("[玩家聊天-" + sdf.format(new Date()) + "]" + event.getPlayer().getName() + "： " + event.getMessage());
     }
 
 //    @EventHandler
@@ -390,88 +385,50 @@ public class main extends JavaPlugin implements Listener {
 //        }
 //    }
 
+    /**
+     * 爆炸发生事件
+     * @param event
+     */
     @EventHandler
-    public void onEntityExplode(EntityExplodeEvent explodeEvent) {  //爆炸事件
-        if (this.getConfig().getStringList("noBlastWorld").contains(explodeEvent.getLocation().getWorld().getName())) {
-            List<Block> blocks = explodeEvent.blockList();
+    public void onEntityExplode(EntityExplodeEvent event) {  //爆炸事件
+        if (this.getConfig().getStringList("noBlastWorld").contains(event.getLocation().getWorld().getName())) {
+            List<Block> blocks = event.blockList();
             blocks.clear();
         }
     }
 
+    /**
+     * 方块破坏事件
+     * @param event
+     */
     @EventHandler
-    public void onBreakEvent(BlockBreakEvent breakEvent) {  //当方块被破坏
-        Player player = breakEvent.getPlayer();
-        String worldName = player.getWorld().getName();
-        if (!player.isOp()) {
-            if (worldName.equals("world")) {
-                Plugin resPlug = getServer().getPluginManager().getPlugin("Residence");
-                if (resPlug != null) {
-                    Location loc = breakEvent.getBlock().getLocation();
-                    ClaimedResidence res = ResidenceApi.getResidenceManager().getByLoc(loc);
-                    if (res != null) {
-                        ResidencePermissions perms = res.getPermissions();
-                        boolean hasPermission = perms.playerHas(player.getName(), "build", true);
-                        if (!hasPermission) {
-                            XConomyAPI xcapi = new XConomyAPI();
-                            int t = xcapi.changePlayerBalance(player.getUniqueId(), player.getName(), BigDecimal.valueOf(1), false);
-                            if (t == 0) {
-                                CMIActionBar.send(player, ChatColor.YELLOW + "非领地区域，扣除 1 金币");
-                            } else if (t == 2) {
-                                CMIActionBar.send(player, ChatColor.BLUE + "金币不足无法在此世界非领地区域进行建造");
-                                breakEvent.setCancelled(true);
-                            }
-                        }
-                    } else {
-                        XConomyAPI xcapi = new XConomyAPI();
-                        int t = xcapi.changePlayerBalance(player.getUniqueId(), player.getName(), BigDecimal.valueOf(1), false);
-                        if (t == 0) {
-                            CMIActionBar.send(player, ChatColor.YELLOW + "非领地区域，扣除 1 金币");
-                        } else if (t == 2) {
-                            CMIActionBar.send(player, ChatColor.BLUE + "金币不足无法在此世界非领地区域进行建造");
-                            breakEvent.setCancelled(true);
-                        }
-                    }
-                }
-            } else if (worldName.equals("spawn")) {
-                breakEvent.setCancelled(true);
-            }
+    public void onBreakEvent(BlockBreakEvent event) {  //当方块被破坏
+        if(!isHaveResidenceBuildMoney(event.getPlayer(),event.getBlock().getLocation())){
+            event.setCancelled(true);
         }
     }
 
-        @EventHandler
-        public void onPlaceEvent (BlockPlaceEvent placeEvent) {  //当方块被放置
-            Player player = placeEvent.getPlayer();
-            String worldName = player.getWorld().getName();
-            if (!player.isOp()) {
-                if (worldName.equals("world")) {
-                    Location loc = placeEvent.getBlock().getLocation();
-                    ClaimedResidence res = ResidenceApi.getResidenceManager().getByLoc(loc);
-                    if (res != null) {
-                        ResidencePermissions perms = res.getPermissions();
-                        boolean hasPermission = perms.playerHas(player.getName(), "build", true);
-                        if (!hasPermission) {
-                            XConomyAPI xcapi = new XConomyAPI();
-                            int t = xcapi.changePlayerBalance(player.getUniqueId(), player.getName(), BigDecimal.valueOf(1), false);
-                            if (t == 0) {
-                                CMIActionBar.send(player, ChatColor.YELLOW + "非领地区域，扣除 1 金币");
-                            } else if (t == 2) {
-                                CMIActionBar.send(player, ChatColor.BLUE + "金币不足无法在此世界非领地区域进行建造");
-                                placeEvent.setCancelled(true);
-                            }
-                        }
-                    } else {
-                        XConomyAPI xcapi = new XConomyAPI();
-                        int t = xcapi.changePlayerBalance(player.getUniqueId(), player.getName(), BigDecimal.valueOf(1), false);
-                        if (t == 0) {
-                            CMIActionBar.send(player, ChatColor.YELLOW + "非领地区域，扣除 1 金币");
-                        } else if (t == 2) {
-                            CMIActionBar.send(player, ChatColor.BLUE + "金币不足无法在此世界非领地区域进行建造");
-                            placeEvent.setCancelled(true);
-                        }
-                    }
-                } else if (worldName.equals("spawn")) {
-                    placeEvent.setCancelled(true);
-                }
-            }
+    /**
+     * 方块放置事件
+     * @param event
+     */
+    @EventHandler
+    public void onPlaceEvent (BlockPlaceEvent event) {  //当方块被放置
+        if(!isHaveResidenceBuildMoney(event.getPlayer(),event.getBlock().getLocation())){
+            event.setCancelled(true);
         }
+    }
+
+    /**
+     * 使用水桶触发事件
+     * @param event
+     */
+    @EventHandler
+    public void onPlaceEvent (PlayerBucketEvent event) {
+        if(!isHaveResidenceBuildMoney(event.getPlayer(),event.getBlock().getLocation())){
+            event.setCancelled(true);
+        }
+    }
+
+
 }
