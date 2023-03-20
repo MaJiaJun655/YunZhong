@@ -9,12 +9,8 @@ import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-
-import com.bekvon.bukkit.residence.Residence;
-import com.bekvon.bukkit.residence.ResidenceCommandListener;
 import com.bekvon.bukkit.residence.api.ResidenceApi;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
-import com.bekvon.bukkit.residence.protection.FlagPermissions;
 import com.bekvon.bukkit.residence.protection.ResidencePermissions;
 import me.yic.xconomy.api.XConomyAPI;
 import minecraft.yunzhong.api.CommandApi;
@@ -31,7 +27,6 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
@@ -73,7 +68,6 @@ public class main extends JavaPlugin implements Listener {
                 if (args.length == 0) {
                     sender.sendMessage("云中安全框架正常运行中");
                 }
-
                 if (args.length != 0) {
                     switch (args[0]) {
                         case "reload":
