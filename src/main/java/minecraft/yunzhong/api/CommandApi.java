@@ -49,7 +49,7 @@ public class CommandApi extends JavaPlugin {
 	}
 
 	/**
-	 * 是否有钱在非领地区域建筑
+	 * 判断是否有钱决定是否允许在非领地区域建筑
 	 * @param player
 	 * @param loc
 	 * @return
@@ -67,6 +67,7 @@ public class CommandApi extends JavaPlugin {
 						int t = xcapi.changePlayerBalance(player.getUniqueId(), player.getName(), BigDecimal.valueOf(1), false);
 						if (t == 0) {
 							CMIActionBar.send(player, ChatColor.YELLOW + "非领地区域，扣除 1 金币");
+							return true;
 						} else if (t == 2) {
 							CMIActionBar.send(player, ChatColor.BLUE + "金币不足无法在此世界非领地区域进行建造");
 							return false;
@@ -77,6 +78,7 @@ public class CommandApi extends JavaPlugin {
 					int t = xcapi.changePlayerBalance(player.getUniqueId(), player.getName(), BigDecimal.valueOf(1), false);
 					if (t == 0) {
 						CMIActionBar.send(player, ChatColor.YELLOW + "非领地区域，扣除 1 金币");
+						return true;
 					} else if (t == 2) {
 						CMIActionBar.send(player, ChatColor.BLUE + "金币不足无法在此世界非领地区域进行建造");
 						return false;

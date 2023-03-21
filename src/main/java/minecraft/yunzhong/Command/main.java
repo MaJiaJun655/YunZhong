@@ -424,7 +424,7 @@ public class main extends JavaPlugin implements Listener {
      * @param event
      */
     @EventHandler
-    public void onPlaceEvent (PlayerBucketEvent event) {
+    public void onPlayerBucketEvent (PlayerBucketEvent event) {
         if(!isHaveResidenceBuildMoney(event.getPlayer(),event.getBlock().getLocation())){
             event.setCancelled(true);
         }
