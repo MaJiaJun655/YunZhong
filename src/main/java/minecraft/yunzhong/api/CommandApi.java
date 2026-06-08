@@ -6,9 +6,15 @@
 package minecraft.yunzhong.api;
 
 import java.util.Random;
+
+import minecraft.yunzhong.Command.main;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Chunk;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -45,12 +51,5 @@ public class CommandApi extends JavaPlugin {
 		} else {
 			play.sendMessage("请使用菜单操作！");
 		}
-
-	}
-
-	public static final void reload(CommandSender sender, Plugin plugin) {
-		sender.sendMessage("[云中之梦]插件正在重载");
-		Bukkit.getPluginManager().disablePlugin(plugin);
-		Bukkit.getPluginManager().enablePlugin(plugin);
 	}
 }

@@ -19,8 +19,10 @@ public class Profile {
 	public static final void ReloadProfile() {
 		FileInputStream fis = null;
 		Properties properties = new Properties();
-		File file = new File("plugins/YunZhong/YunZhong.properties");
+		
 		File folder = new File("plugins/YunZhong");
+		File file = new File("plugins/YunZhong/YunZhong.properties");
+		
 		if (!folder.exists()) {
 			folder.mkdir();
 		}
@@ -35,14 +37,19 @@ public class Profile {
 
 		try {
 			fis = new FileInputStream(file);
+			properties.load(fis);
 		} catch (FileNotFoundException var10) {
 			var10.printStackTrace();
-		}
-
-		try {
-			properties.load(fis);
 		} catch (IOException var9) {
 			var9.printStackTrace();
+		} finally {
+			if (fis != null) {
+				try {
+					fis.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 
 		if (properties.getProperty("BossName") == null) {
@@ -66,39 +73,8 @@ public class Profile {
 			properties.setProperty("sleep_morning", "true");
 		}
 
-		FileWriter fWriter = null;
-
-		try {
-			fWriter = new FileWriter("plugins/yzzm/yzzm.properties");
-		} catch (IOException var8) {
-			var8.printStackTrace();
-		}
-
-		try {
-			properties.store(fWriter, "yzzm");
-		} catch (IOException var7) {
-			var7.printStackTrace();
-		}
-
-		try {
-			fis.close();
-		} catch (IOException var6) {
-			var6.printStackTrace();
-		}
 
 	}
 
-	public static final FileInputStream initialization() {
-		FileInputStream fis = null;
-		new Properties();
-		File file = new File("plugins/yzzm/yzzm.properties");
 
-		try {
-			fis = new FileInputStream(file);
-		} catch (FileNotFoundException var4) {
-			var4.printStackTrace();
-		}
-
-		return fis;
-	}
 }

@@ -1,6 +1,6 @@
-f_state: true
+f_state: false
 f_command: /clock open 0
-antiMonster: false
+antiMonster: true
 bossName: Jetren
 publicOffFly: true
 noflyWorld:
@@ -8,3 +8,19 @@ noflyWorld:
 noBlastWorld:
   - EMworld
   - world
+creatureSpawnLimit:
+  enderman: 1
+  guardian: 2
+creatureChunkLimit:
+  - creeper
+  - guardian
+  - spider
+  - zombie
+  - skeleton
+  - enderman
+banitems:
+  - WITHER_SKELETON_SPAWN_EGG
+  - VILLAGER_SPAWN_EGG
+  - VINDICATOR_SPAWN_EGG
+  - SHULKER_SPAWN_EGG
+  - EVOKER_SPAWN_EGG
