@@ -46,9 +46,9 @@ public class McLogger {
             logger.addHandler(fh);
             fh.setFormatter(new SimpleFormatter());
         } catch (SecurityException var4) {
-            logger.log(Level.SEVERE, "°²È«ĞÔ´íÎó", var4);
+            logger.log(Level.SEVERE, "å®‰å…¨æ€§é”™è¯¯", var4);
         } catch (IOException var5) {
-            logger.log(Level.SEVERE, "¶ÁÈ¡ÎÄ¼şÈÕÖ¾´íÎó", var5);
+            logger.log(Level.SEVERE, "è¯»å–æ–‡ä»¶æ—¥å¿—é”™è¯¯", var5);
         }
 
     }

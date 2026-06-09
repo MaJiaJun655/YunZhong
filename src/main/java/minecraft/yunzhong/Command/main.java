@@ -1,5 +1,4 @@
 package minecraft.yunzhong.Command;
-
 import minecraft.yunzhong.api.CommandApi;
 import minecraft.yunzhong.api.McLogger;
 import minecraft.yunzhong.api.Profile;
@@ -8,6 +7,7 @@ import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -15,22 +15,22 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.entity.CreatureSpawnEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.entity.*;
 import org.bukkit.event.player.*;
 import org.bukkit.plugin.java.JavaPlugin;
-
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+
+import static minecraft.yunzhong.api.CommandApi.setProtected;
+import static minecraft.yunzhong.api.messageUnit.sendMessage;
+import static minecraft.yunzhong.database.dataCache.protectedPlayers;
 
 public class main extends JavaPlugin implements Listener {
+
     @Override
     public void onEnable() {
         getLogger().info("[云中之梦安全框架已加载]");
+
         this.saveDefaultConfig();
         this.getCommand("mcyz").setExecutor(this);
         Bukkit.getPluginManager().registerEvents(this, this);
@@ -61,14 +61,8 @@ public class main extends JavaPlugin implements Listener {
                         case "moneygo":
                             CommandApi.moneyGo(sender);
                             break;
-                        case "toemail":
-//							if(args[1]!=null&&args[2]!=null&&args[3]!=null) {
-//								email.sendEmainTo(args[1], args[2],args[3],sender.getName());
-//							}else if(args[1]!=null&&args[2]!=null) {
-//							email.sendEmainTo(args[1], args[2]);
-//							}else {
-//								sender.sendMessage("请输入/mcyz toemail 标题 内容 邮箱");
-//							}
+                        case "protected":
+                            CommandApi.setProtected(sender.getName());
 							break;
                         case "residencea":
                                 if (sender.hasPermission("residence.group.Default")) {
@@ -135,13 +129,9 @@ public class main extends JavaPlugin implements Listener {
                                 sender.sendMessage("玩家不可为空");
                             }
                             break;
-                        case "toemail":
-//						if(args[1]!=null&&args[2]!=null&&args[3]!=null) {
-//							email.sendEmainTo(args[1], args[2],args[3],sender.getName());
-//						}else if(args[1]!=null&&args[2]!=null) {
-//							email.sendEmainTo(args[1], args[2]);
-//						}
-//						break;
+                        case "protected":
+                            setProtected(sender,args);
+                            break;
                     }
                 }
             }
@@ -151,6 +141,9 @@ public class main extends JavaPlugin implements Listener {
         }
         return true;
     }
+
+
+
 
 
     public void admin(CommandSender sender) {
@@ -245,6 +238,7 @@ public class main extends JavaPlugin implements Listener {
 
     /**
      * 设置区块内生物生成的最大上限
+     * 搭配附近32生成40性能更好
      * @param spawnEvent
      */
     @EventHandler
@@ -275,30 +269,51 @@ public class main extends JavaPlugin implements Listener {
         }
     }
 
+    /**
+     * 当一个实体受到另外一个实体伤害时触发该事件
+     * 保护模式校验
+     * @param event
+     */
+    @EventHandler
+    public void onDamage(EntityDamageByEntityEvent event) {
+        if(event.getEntity() instanceof Player p&&event.getDamager() instanceof Player g){
+            if (protectedPlayers.contains(p.getName())||protectedPlayers.contains(g.getName())) {
+                event.setCancelled(true);
+                if (!protectedPlayers.contains(p.getName())) {
+                    sendMessage(g, ChatColor.YELLOW+"该玩家开启了保护模式，无法攻击", ChatColor.YELLOW+"The player has activated protection mode, thus unable to attack");
+                }else{
+                    sendMessage(p, ChatColor.YELLOW+"你开启了保护模式，你不能攻击其他玩家", ChatColor.YELLOW+"You have activated protection mode, and you cannot attack other players");
+                }
 
+            }
+        }
+    }
     @EventHandler
     /**
      * 生物收到伤害时
      */
     public void creatureChunkLimit(EntityDamageEvent DamageByEntityEvent){
-        Chunk chunk = DamageByEntityEvent.getEntity().getLocation().getChunk();
-        Entity[] entityList = chunk.getEntities(); //获得当前区块的所有生物
-        List<String> list = this.getConfig().getStringList("creatureChunkLimit");
-        if (list.size()!=0) {
-            for (String mobName : list) {
-                int monstercount = 0;
-                for (Entity entity : entityList) {
-                    EntityType targetType = EntityType.valueOf(mobName.toUpperCase());
-                    if(entity.getType()==targetType) {
-                        monstercount = monstercount + 1;
-                        if (monstercount > 10) {
-                            entity.remove();
-                            monstercount = monstercount - 1;
+        if(DamageByEntityEvent.getEntityType()!=EntityType.PLAYER) {
+            Chunk chunk = DamageByEntityEvent.getEntity().getLocation().getChunk();
+            Entity[] entityList = chunk.getEntities(); //获得当前区块的所有生物
+            List<String> list = this.getConfig().getStringList("creatureChunkLimit");
+            if (list.size() != 0) {
+                for (String mobName : list) {
+                    int monstercount = 0;
+                    for (Entity entity : entityList) {
+                        EntityType targetType = EntityType.valueOf(mobName.toUpperCase());
+                        if (entity.getType() == targetType) {
+                            monstercount = monstercount + 1;
+                            if (monstercount > 10) {
+                                entity.remove();
+                                monstercount = monstercount - 1;
+                            }
                         }
                     }
                 }
             }
         }
+
     }
 
 
